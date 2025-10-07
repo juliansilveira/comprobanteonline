@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import PagoAlumnoForm from '../components/PagoAlumnoForm'
 import Comprobante from '../components/Comprobante'
+import escudo from '../assets/images.jpeg'
 
 export default function Home() {
   const [comprobante, setComprobante] = useState(null)
@@ -18,6 +19,7 @@ export default function Home() {
       <h1 className="text-2xl font-semibold text-center mb-4 text-blue-600">
         Cobrador Digital
       </h1>
+      <img className='h-fit w-fit mx-auto mt-auto' src={escudo}></img>
 
       {!comprobante ? (
         <PagoAlumnoForm onGenerar={handleGenerarComprobante} />
