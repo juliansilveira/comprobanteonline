@@ -7,7 +7,8 @@ export default function PagoAlumnoForm({ onGenerar }) {
     categoria: '',
     monto: '',
     fecha: '',
-    telefono: ''
+    telefono: '',
+    observacion: ''
   })
 
   const handleChange = (e) => {
@@ -73,6 +74,13 @@ export default function PagoAlumnoForm({ onGenerar }) {
         placeholder="Teléfono (ej: 54911xxxxxxxx)"
         className="border rounded-lg p-2 w-full"
         required
+      />
+      <textarea
+        name="observacion"
+        value={formData.observacion}
+        onChange={handleChange}
+        placeholder="Observaciones (opcional)"
+        className="border rounded-lg p-2 w-full min-h-[80px]"
       />
 
       <button

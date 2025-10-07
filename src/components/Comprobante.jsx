@@ -1,16 +1,19 @@
 import React from 'react'
 
 export default function Comprobante({ datos, onNuevo }) {
-  const { nombre, apellido, categoria, monto, fecha, telefono } = datos
+  const { nombre, apellido, categoria, monto, fecha, telefono, observacion } = datos
 
   const generarMensaje = () => {
-    return `🏷️ *Comprobante de Pago*
+    let mensaje = `🏷️ *Comprobante de Pago*
 👤 Nombre: ${nombre} ${apellido}
 📘 Categoría: ${categoria}
 💰 Monto: $${monto}
-📅 Fecha: ${fecha}
-
-✅ Gracias por su pago.`
+📅 Fecha: ${fecha}`
+    
+    if (observacion) mensaje += `\n📝 Observación: ${observacion}`
+    
+    mensaje += `\n\n✅ Gracias por su pago.`
+    return mensaje
   }
 
   const enviarPorWhatsApp = () => {
@@ -32,6 +35,11 @@ export default function Comprobante({ datos, onNuevo }) {
         <p><strong>Monto:</strong> ${monto}</p>
         <p><strong>Fecha:</strong> {fecha}</p>
         <p><strong>Teléfono:</strong> {telefono}</p>
+        {observacion && (
+          <p className="italic text-gray-600 mt-2">
+            <strong>Observación:</strong> {observacion}
+          </p>
+        )}
       </div>
 
       <div className="w-full flex flex-col gap-2">
