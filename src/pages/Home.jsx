@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import PagoAlumnoForm from '../components/PagoAlumnoForm'
 import Comprobante from '../components/Comprobante'
-import escudo from '../assets/images.jpeg'
+import escudo from '../assets/images.png'
 
 export default function Home() {
   const [comprobante, setComprobante] = useState(null)
@@ -15,7 +15,7 @@ export default function Home() {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto bg-white shadow-lg rounded-2xl p-6">
+    <div className="w-full max-w-md mx-auto bg-gray-100 shadow-lg rounded-2xl p-6">
       <h1 className="text-2xl font-semibold text-center mb-4 text-blue-600">
         Cobrador Digital
       </h1>
