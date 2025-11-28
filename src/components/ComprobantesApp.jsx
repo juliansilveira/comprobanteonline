@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 export default function ComprobantesApp() {
   const [seccion, setSeccion] = useState("alumno");
+  const [cargandoPDF, setCargandoPDF] = useState(false);
   const [formData, setFormData] = useState({
     nombre: "",
     apellido: "",
@@ -39,13 +40,69 @@ ${formData.observacion ? `Observación: ${formData.observacion}` : ""}`;
 
   const enviarWhatsApp = () => {
     if (!formData.telefono) {
-      alert("Por favor, ingrese un número de teléfono para enviar el comprobante.");
+      alert(
+        "Por favor, ingrese un número de teléfono para enviar el comprobante."
+      );
       return;
     }
 
     const mensaje = generarMensaje();
-    const url = `https://wa.me/${formData.telefono}?text=${encodeURIComponent(mensaje)}`;
+    const url = `https://wa.me/${formData.telefono}?text=${encodeURIComponent(
+      mensaje
+    )}`;
     window.open(url, "_blank");
+  };
+
+  const generarPDF = async () => {
+    // Validar datos requeridos
+    if (
+      !formData.nombre ||
+      !formData.apellido ||
+      !formData.monto ||
+      !formData.fecha
+    ) {
+      alert("Por favor, complete todos los campos requeridos.");
+      return;
+    }
+
+    setCargandoPDF(true);
+
+    try {
+      const response = await fetch("/.netlify/functions/generate-pdf", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          tipo: seccion,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al generar el PDF");
+      }
+
+      // Convertir respuesta a blob
+      const blob = await response.blob();
+
+      // Crear URL temporal para descargar
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `comprobante-${formData.nombre}-${formData.apellido}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+
+      // Limpiar
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Hubo un error al generar el PDF. Por favor, intente nuevamente.");
+    } finally {
+      setCargandoPDF(false);
+    }
   };
 
   return (
@@ -54,7 +111,9 @@ ${formData.observacion ? `Observación: ${formData.observacion}` : ""}`;
       <nav className="w-full bg-white shadow-md flex justify-around py-3 sticky top-0 z-10">
         <button
           className={`px-4 py-2 font-semibold rounded-md ${
-            seccion === "alumno" ? "bg-blue-600 text-white" : "text-gray-600 hover:bg-gray-200"
+            seccion === "alumno"
+              ? "bg-blue-600 text-white"
+              : "text-gray-600 hover:bg-gray-200"
           }`}
           onClick={() => {
             setSeccion("alumno");
@@ -74,7 +133,9 @@ ${formData.observacion ? `Observación: ${formData.observacion}` : ""}`;
         </button>
         <button
           className={`px-4 py-2 font-semibold rounded-md ${
-            seccion === "socio" ? "bg-blue-600 text-white" : "text-gray-600 hover:bg-gray-200"
+            seccion === "socio"
+              ? "bg-blue-600 text-white"
+              : "text-gray-600 hover:bg-gray-200"
           }`}
           onClick={() => {
             setSeccion("socio");
@@ -105,7 +166,9 @@ ${formData.observacion ? `Observación: ${formData.observacion}` : ""}`;
         {/* Formulario común */}
         <form className="bg-white shadow-md rounded-xl p-6 w-full max-w-md space-y-4">
           <div>
-            <label className="block text-gray-600 font-medium mb-1">Nombre</label>
+            <label className="block text-gray-600 font-medium mb-1">
+              Nombre
+            </label>
             <input
               type="text"
               name="nombre"
@@ -117,7 +180,9 @@ ${formData.observacion ? `Observación: ${formData.observacion}` : ""}`;
           </div>
 
           <div>
-            <label className="block text-gray-600 font-medium mb-1">Apellido</label>
+            <label className="block text-gray-600 font-medium mb-1">
+              Apellido
+            </label>
             <input
               type="text"
               name="apellido"
@@ -130,7 +195,9 @@ ${formData.observacion ? `Observación: ${formData.observacion}` : ""}`;
 
           {seccion === "alumno" && (
             <div>
-              <label className="block text-gray-600 font-medium mb-1">Categoría</label>
+              <label className="block text-gray-600 font-medium mb-1">
+                Categoría
+              </label>
               <input
                 type="text"
                 name="categoria"
@@ -144,7 +211,9 @@ ${formData.observacion ? `Observación: ${formData.observacion}` : ""}`;
 
           {seccion === "socio" && (
             <div>
-              <label className="block text-gray-600 font-medium mb-1">Número de Socio</label>
+              <label className="block text-gray-600 font-medium mb-1">
+                Número de Socio
+              </label>
               <input
                 type="text"
                 name="numeroSocio"
@@ -157,7 +226,9 @@ ${formData.observacion ? `Observación: ${formData.observacion}` : ""}`;
           )}
 
           <div>
-            <label className="block text-gray-600 font-medium mb-1">Monto</label>
+            <label className="block text-gray-600 font-medium mb-1">
+              Monto
+            </label>
             <input
               type="number"
               name="monto"
@@ -169,7 +240,9 @@ ${formData.observacion ? `Observación: ${formData.observacion}` : ""}`;
           </div>
 
           <div>
-            <label className="block text-gray-600 font-medium mb-1">Fecha</label>
+            <label className="block text-gray-600 font-medium mb-1">
+              Fecha
+            </label>
             <input
               type="date"
               name="fecha"
@@ -205,6 +278,19 @@ ${formData.observacion ? `Observación: ${formData.observacion}` : ""}`;
               placeholder="Ej: 5491123456789"
             />
           </div>
+
+          <button
+            type="button"
+            onClick={generarPDF}
+            disabled={cargandoPDF}
+            className={`w-full py-2 rounded-lg font-semibold transition ${
+              cargandoPDF
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            }`}
+          >
+            {cargandoPDF ? "Generando PDF..." : "📄 Descargar PDF"}
+          </button>
 
           <button
             type="button"
