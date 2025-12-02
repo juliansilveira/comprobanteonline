@@ -76,7 +76,7 @@ exports.handler = async (event, context) => {
     doc
       .fontSize(14)
       .font("Helvetica-Bold")
-      .text("Datos del Pagador", { underline: true });
+      .text("Datos del Cliente", { underline: true });
 
     doc.moveDown(0.5);
     doc.fontSize(12).font("Helvetica");
